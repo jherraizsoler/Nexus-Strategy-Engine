@@ -1,0 +1,54 @@
+# --- Python / Backend ---
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.history/
+
+# --- SQLite (Persistencia local) ---
+*.sqlite3
+*.db
+*.db-journal
+
+# --- Angular / Frontend ---
+/frontend/dist/
+/frontend/tmp/
+/frontend/out-tsc/
+/frontend/bazel-out/
+/frontend/node_modules/
+/frontend/.sass-cache/
+/frontend/connect.lock
+/frontend/coverage/
+/frontend/.angular/
+
+# --- IDEs / Editores ---
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Docker ---
+.dockernodehash
+backend/.env

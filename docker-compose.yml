@@ -1,0 +1,36 @@
+services:
+  nexus-backend:
+    build: 
+      context: ./backend 
+      dockerfile: Dockerfile
+    container_name: nexus_strategy_backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env 
+    environment:
+      # 1. Ajustamos el PYTHONPATH a la nueva raíz del contenedor
+      - PYTHONPATH=/app
+      # 2. La ruta de la DB debe coincidir con la carpeta /app/data del Dockerfile
+      - DATABASE_PATH=/app/data/nexus_strategy.db
+    volumes:
+      # Mapeamos tu carpeta local backend a la ruta interna /app/backend
+      - ./backend:/app/backend
+      # Mapeamos la data específicamente
+      - ./backend/data:/app/backend/data
+    restart: always
+
+  frontend:
+    build: ./frontend
+    container_name: nexus_strategy_frontend
+    ports:
+      - "4200:4200"
+    # --- AÑADIR ESTO PARA DESARROLLO ---
+    volumes:
+      - ./frontend:/app          # Mapea tu código
+      - /app/node_modules/        # Protege las librerías del contenedor
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Obligatorio para que Docker detecte cambios en Windows/Mac
+    # ----------------------------------
+    depends_on:
+      - nexus-backend

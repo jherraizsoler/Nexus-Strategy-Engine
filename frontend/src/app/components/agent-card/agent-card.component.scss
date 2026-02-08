@@ -1,0 +1,126 @@
+/* src/app/agent-card/agent-card.component.scss */
+
+:host {
+  display: block;
+  margin-bottom: 2rem; // Separación generosa entre bloques de diferentes agentes
+}
+
+/* Estilo para el bloque de pregunta del usuario */
+.user-query-card {
+  background: #fdfdfd; 
+  border: 1px solid #eef2f6;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  position: relative;
+
+  .header-query {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    
+    .user-badge {
+      background: #f1f5f9;
+      color: #64748b;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .fecha {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+    }
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #1e293b;
+    line-height: 1.6;
+    font-weight: 400;
+    /* Evita que el texto sea demasiado largo en una sola línea */
+    max-width: 90%;
+  }
+}
+
+
+.card-analisis {
+  background: #ffffff;
+  border-radius: 12px;
+  border-left: 6px solid #e2e8f0; // Borde más grueso y moderno
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+
+  // Colores de borde por nodo (Nexus Strategy Engine)
+  &.border-market_intelligence { border-left-color: #00c6ff; }
+  &.border-solutions_architect { border-left-color: #7b2ff7; }
+  &.border-risk_officer { border-left-color: #ff4b2b; }
+  &.border-executive_reviewer { border-left-color: #11998e; }
+}
+
+.card-content {
+  padding: 1.5rem 2rem; // Más espacio interno para que el texto no toque los bordes
+}
+
+.header-analisis {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem; // Espacio bajo el tag de nombre
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 0.75rem;
+}
+
+.decision-tag {
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: white;
+
+  &.tag-market_intelligence { background: #00c6ff; }
+  &.tag-solutions_architect { background: #7b2ff7; }
+  &.tag-risk_officer { background: #ff4b2b; }
+  &.tag-executive_reviewer { background: #11998e; }
+}
+
+.ia-response {
+  // Ajuste del renderizado de Markdown
+  ::ng-deep {
+    p { margin-bottom: 1.25rem; line-height: 1.7; color: #334155; }
+    
+    h1, h2, h3 { 
+      margin: 1.5rem 0 1rem; 
+      color: #1e293b; 
+      font-weight: 700;
+    }
+
+    ul, ol { 
+      margin-bottom: 1.25rem; 
+      padding-left: 1.5rem;
+      
+      li { margin-bottom: 0.5rem; }
+    }
+
+    strong { color: #0f172a; font-weight: 600; }
+
+    // Estilo para las tablas si el motor Nexus las genera
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      td, th { border: 1px solid #e2e8f0; padding: 8px; }
+    }
+  }
+}

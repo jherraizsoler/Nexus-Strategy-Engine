@@ -1,0 +1,13 @@
+# Core IA
+langchain-openai>=0.1.0
+langgraph>=0.1.0
+langchain-core>=0.2.0
+langgraph-checkpoint-sqlite
+
+# Web & API
+fastapi
+uvicorn
+python-dotenv
+
+# Utils
+pydantic>=2.0.0

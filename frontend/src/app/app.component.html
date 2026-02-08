@@ -1,0 +1,138 @@
+<div class="app-layout">
+  <div class="sidebar-toggle" (click)="isSidebarCollapsed = !isSidebarCollapsed">
+    <span>{{ isSidebarCollapsed ? '→' : '←' }}</span>
+  </div>
+
+  <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+    <div class="sidebar-header">
+      <h2>NEXUS</h2>
+      <span>Strategy Engine</span>
+    </div>
+
+    <div class="new-dossier-area">
+      <input [(ngModel)]="nuevoNombreDossier" placeholder="Nombre del nuevo dossier..." (keyup.enter)="crearDossier()"
+        class="sidebar-input">
+      <button (click)="crearDossier()" class="btn-new" [disabled]="!nuevoNombreDossier">
+        <span>Nuevo Dossier</span>
+      </button>
+    </div>
+
+    <nav class="dossier-list">
+      <h3>DOSSIERS ESTRATÉGICOS</h3>
+      <div *ngFor="let d of dossiers" class="dossier-item" [class.active]="d.id === dossierSeleccionadoId"
+        (click)="d.editando ? $event.stopPropagation() : seleccionarDossier(d)">
+
+        <input *ngIf="d.editando" [(ngModel)]="d.nombreTemp" (keyup.enter)="guardarNombre(d)" (blur)="guardarNombre(d)"
+          (keyup.escape)="cancelarEdicion(d)" (click)="$event.stopPropagation()" class="edit-input" #editInput
+          title="Editar nombre del dossier" aria-label="Nombre del dossier">
+
+        <span *ngIf="!d.editando" class="dossier-name">{{ d.nombre }}</span>
+
+        <div class="dossier-actions" *ngIf="!d.editando">
+          <button class="action-btn edit" (click)="activarEdicion(d, $event)" title="Editar">
+            <span>✎</span>
+          </button>
+          <button class="action-btn delete" (click)="confirmarEliminacion(d, $event)" title="Eliminar">
+            <span>✕</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="fixed-header">
+      <div class="header-inner">
+        <div class="dossier-info">
+          <span class="label">DOSSIER ESTRATÉGICO</span>
+
+          <div class="title-container">
+            <h1>{{ dossierSeleccionado?.nombre }}</h1>
+          </div>
+        </div>
+
+        <div class="header-status">
+          <div class="pulse-indicator"></div>
+          <span class="status-text">Motor Nexus Activo</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="scroll-container" #scrollContainer>
+
+      <div class="results-wrapper" id="content-to-export">
+        <div *ngIf="!dossierSeleccionado" class="welcome-screen">
+          <div class="nexus-logo-placeholder"></div>
+          <h2>Nexus Strategy Engine</h2>
+          <p>Selecciona un dossier para comenzar la orquestación de inteligencia estratégica.</p>
+        </div>
+
+        <ng-container *ngFor="let item of consultasActivas; let i = index">
+          <div class="user-message-wrapper"
+            *ngIf="!item.decision || (i === 0 || consultasActivas[i-1].pregunta !== item.pregunta)">
+            <div class="user-query-card">
+              <div class="query-body">
+                <div class="header-query">
+                  <span class="fecha">{{ item.fecha | date:'HH:mm' }}</span>
+                  <span class="user-badge">DESAFÍO PLANTEADO</span>
+                </div>
+                <div class="query-content">
+                  <p>{{ item.pregunta }}</p>
+                </div>
+              </div>
+              <div class="user-avatar"><span>M</span></div>
+            </div>
+          </div>
+
+          <div class="agent-card-container" *ngIf="item.decision" [id]="'query-block-' + i">
+            <app-agent-card [agentName]="item.decision" [role]="item.decision.replace('_', ' ')"
+              [content]="item.respuestaHtml">
+            </app-agent-card>
+
+            <button class="btn-pdf-single" (click)="exportarConsultaIndividual('query-block-' + i, item.decision)">
+              <span class="icon">📄</span> PDF
+            </button>
+          </div>
+        </ng-container>
+
+        <div *ngIf="isProcessing" class="loading-state">
+          <div class="spinner-flex">
+            <div class="nexus-spinner"></div>
+            <div class="loading-text">
+              <p class="status">MOTORES ACTIVOS</p>
+              <p class="sub-status">Sincronizando nodos de inteligencia Nexus...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="fixed-input-area" *ngIf="dossierSeleccionado">
+      <div class="input-container">
+        <textarea [(ngModel)]="userInput" placeholder="Describe el escenario estratégico..."
+          (keyup.enter)="enviarConsulta()" [disabled]="isProcessing" rows="1"></textarea>
+        <button class="btn-execute" (click)="enviarConsulta()" [disabled]="isProcessing || !userInput.trim()">
+          <i class="fas fa-paper-plane">▶</i>
+        </button>
+      </div>
+    </footer>
+  </main>
+
+  <div class="modal-overlay" *ngIf="showDeleteModal">
+    <div class="modal-window">
+      <button class="close-x" (click)="showDeleteModal = false">✕</button>
+      <div class="modal-header">
+        <div class="warning-icon">⚠️</div>
+        <h3>¿Eliminar Dossier Nexus?</h3>
+      </div>
+      <div class="modal-body">
+        <p>Se borrará permanentemente el historial de inteligencia de:</p>
+        <div class="dossier-name-confirm">{{ dossierParaAccion?.nombre }}</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="showDeleteModal = false">Cancelar</button>
+        <button class="btn-danger" (click)="eliminarDossierDefinitivo()">Confirmar Eliminación</button>
+      </div>
+    </div>
+  </div>
+</div>

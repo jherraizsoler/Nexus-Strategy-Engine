@@ -1,0 +1,22 @@
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "target": "ES2022",
+    "useDefineForClassFields": false,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    
+    /* Configuración de Rigor Técnico */
+    "strict": true,                                 // Reduce errores de tipo
+    "forceConsistentCasingInFileNames": true,       // Evita líos entre Windows/Linux
+    "skipLibCheck": true,                           // Acelera la compilación saltando tipos de librerías
+    
+    "types": []
+  },
+  "files": ["src/main.ts"],
+  "include": ["src/**/*.d.ts", "src/**/*.ts"]
+}

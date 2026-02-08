@@ -1,0 +1,952 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+// Reset para asegurar que nada use más del 100%
+:host {
+  display: block;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+// ESTO ES LO QUE ELIMINA LOS 8PX DEL INSPECTOR
+::ng-deep body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden; // Evita scroll doble
+  width: 100vw;
+  height: 100vh;
+}
+
+// Reset universal para que nada use más del 100%
+::ng-deep * {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.app-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: #ffffff;
+
+  // --- SIDEBAR UNIFICADA (SIN SEPARACIONES) ---
+  .sidebar {
+    width: 300px;
+    height: 100vh; // Asegura que ocupe todo el alto
+    background: #0f172a;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0; // Forzamos margen cero arriba
+    padding-top: 0; // El contenedor empieza en el píxel 0
+    border-right: 1px solid #1e293b;
+    transition: all 0.3s ease;
+
+    &.collapsed {
+      width: 0;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    // Cabecera pegada arriba
+    .sidebar-header {
+      padding: 1.5rem 1.5rem 1rem;
+      background: #0f172a;
+
+      h2 {
+        margin: 0;
+        color: #38bdf8;
+        margin: 0;
+        font-size: 1.8rem;
+      }
+
+      span {
+        color: #64748b;
+        font-size: 0.9rem;
+      }
+    }
+
+    // Área de acción (Input + Botón) pegada a la cabecera
+    .new-dossier-area {
+      padding: 1rem 1.5rem;
+      background: #0f172a;
+
+      input {
+        width: 100%;
+        background: #1e293b;
+        border: 1px solid #334155;
+        color: white;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        box-sizing: border-box; // Evita que el input se salga
+      }
+
+      .btn-new {
+        width: 100%;
+        background: #38bdf8;
+        color: #0f172a;
+        font-weight: bold;
+        border: none;
+        padding: 12px;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:hover {
+          background: #7dd3fc;
+        }
+      }
+    }
+
+    // Lista de dossiers (Ocupa el resto del alto)
+    .dossier-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+
+      h3 {
+        font-size: 0.75rem;
+        color: #475569;
+        letter-spacing: 1px;
+        margin-bottom: 1rem;
+      }
+
+      .dossier-item {
+        background: #1e293b;
+        padding: 14px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid transparent;
+
+        &:hover {
+          background: #1e293b;
+          border-color: #334155;
+        }
+
+        &.active {
+          border-color: #38bdf8;
+          background: #334155;
+        }
+
+        .dossier-name {
+          color: white;
+          font-weight: 500;
+          font-size: 0.9rem;
+        }
+
+        .btn-delete {
+          background: none;
+          border: none;
+          color: #ef4444;
+          cursor: pointer;
+          padding: 5px;
+        }
+
+        .edit-input {
+          background: transparent;
+          border: none;
+          border-bottom: 2px solid #3b82f6; // El azul de solutions_architect
+          color: white;
+          width: 80%;
+          outline: none;
+          font-family: inherit;
+          padding: 2px 0;
+        }
+      }
+    }
+  }
+}
+.results-wrapper {
+  max-width: 950px; // Ancho ideal para lectura
+  margin: 0 auto;   // Centrado
+  padding-top: 50px;
+  padding-bottom: 100px;
+}
+
+// --- ÁREA PRINCIPAL ---
+.main-content {
+  flex: 1; // Toma todo el espacio restante (Width dinámico)
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f8fafc;
+  position: relative;
+  padding-bottom: 120px !important; // Añade este espacio extra (ajusta el valor si tu caja de texto es más alta)
+  overflow-y: auto; // Asegura que el scroll funcione correctamente
+
+  .fixed-header {
+    height: 70px;
+    min-height: 70px;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    padding: 0 3rem;
+
+    h1 {
+      font-size: 1.5rem;
+      color: #0f172a;
+      margin: 0;
+    }
+  }
+
+  // Zona de scroll para los informes
+  .scroll-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    scroll-behavior: smooth; // Scroll suave de serie
+    background-color: #f8fafc;
+
+    // Scrollbar personalizada para que combine con el azul
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #cbd5e0;
+      border-radius: 10px;
+    }
+  }
+
+  // --- BUSCADOR FIJO ABAJO ---
+.fixed-input-area {
+  position: absolute;
+  bottom: 0;
+  left: 0; // Se ajustará solo si el sidebar empuja el layout
+  right: 0;
+  padding: 3rem 2rem 2rem; // Más espacio superior para el degradado
+  // Degradado más profesional para que el texto desaparezca suavemente
+  background: linear-gradient(to top, #f8fafc 60%, transparent); 
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 100;
+
+  .input-container {
+    pointer-events: auto;
+    width: 100%;
+    max-width: 900px; // Un poco más ancho para informes densos
+    background: white;
+    border: 1px solid #e2e8f0; 
+    border-radius: 20px; // Más redondeado = más moderno
+    display: flex;
+    align-items: flex-end;
+    padding: 10px 16px;
+    gap: 12px;
+    // Sombra más profunda para dar efecto de "flotado"
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:focus-within {
+      border-color: #38bdf8;
+      transform: translateY(-2px); // Sutil elevación al escribir
+      box-shadow: 0 20px 25px -5px rgba(56, 189, 248, 0.15);
+    }
+
+    textarea {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 12px 4px;
+      font-size: 1.05rem;
+      resize: none;
+      background: transparent;
+      max-height: 200px;
+      font-family: 'Inter', sans-serif;
+      color: #1e293b;
+      
+      &::placeholder {
+        color: #94a3b8;
+      }
+    }
+
+    .btn-execute {
+      background: #0f172a; 
+      color: white;
+      border: none;
+      width: 46px; // Un poco más grande
+      height: 46px;
+      border-radius: 14px; // Squircle moderno en vez de círculo puro
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 2px;
+
+      i {
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+      }
+
+      &:hover:not(:disabled) {
+        background: #38bdf8;
+        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+        i {
+          transform: translateX(2px) scale(1.1); // Efecto de impulso
+        }
+      }
+
+      &:disabled {
+        background: #f1f5f9;
+        color: #cbd5e0;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+}
+
+// Botón Toggle flotante (tipo ChatGPT)
+.sidebar-toggle {
+  position: fixed;
+  left: 15px;
+  bottom: 20px;
+  width: 40px;
+  height: 40px;
+  background: #0f172a;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1000;
+  border: 1px solid #1e293b;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+// Estilos de los informes (Markdown)
+.card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  line-height: 1.7;
+
+  h2 {
+    margin-top: 0;
+    color: #0f172a;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 1rem;
+  }
+}
+
+.loading-state {
+  display: flex;
+  justify-content: flex-start; // Alineado a la izquierda como los agentes
+  padding: 20px;
+  margin-top: 10px;
+  animation: fadeIn 0.3s ease-in;
+
+  .spinner-flex {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(248, 250, 252, 0.8);
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px border #e2e8f0;
+  }
+
+  .nexus-spinner {
+    width: 22px;
+    height: 22px;
+    border: 3px solid #e2e8f0;
+    border-top: 3px solid #38bdf8; // Azul Nexus
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .loading-text {
+    .status {
+      margin: 0;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #38bdf8;
+      letter-spacing: 0.1em;
+    }
+    .sub-status {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+  }
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+
+.dossier-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background-color: rgba(255, 255, 255, 0.8); 
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .dossier-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 0.1em;
+  }
+
+  h2 { margin: 0; font-size: 1.25rem; color: #0f172a; }
+
+  .btn-pdf-global {
+    background: #0f172a;
+    color: #38bdf8;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    &:hover { background: #1e293b; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(56, 189, 248, 0.2); }
+  }
+}
+
+.agent-card-container {
+  position: relative;
+  &:hover .btn-pdf-single { opacity: 1; transform: translateX(0); }
+
+  .btn-pdf-single {
+    position: absolute;
+    top: 20px;
+    right: -50px; // Aparece desde la derecha
+    opacity: 0;
+    transform: translateX(-10px);
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    &:hover { color: #38bdf8; border-color: #38bdf8; }
+  }
+}
+
+
+.user-message-wrapper {
+  display: flex;
+  justify-content: flex-end; // Empuja todo a la derecha
+  width: 100%;
+  margin-bottom: 2.5rem;
+}
+
+.user-query-card {
+  display: flex;
+  align-items: flex-start; // Alinea el avatar con el inicio del texto
+  gap: 16px;
+  max-width: 80%; // No ocupa todo el ancho para parecer chat
+
+  .query-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; // Alinea fecha y badge a la derecha dentro del bloque
+  }
+
+  .header-query {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 6px;
+
+    .user-badge {
+      color: #64748b;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+
+    .fecha {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+  }
+
+  .query-content {
+    background: #f1f5f9; // Gris muy suave
+    padding: 1rem 1.25rem;
+    border-radius: 18px 4px 18px 18px; // Esquina superior derecha más recta
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
+    p {
+      margin: 0;
+      font-size: 1rem;
+      color: #1e293b;
+      line-height: 1.5;
+      font-weight: 500;
+      text-align: right; // Texto alineado a la derecha
+    }
+  }
+
+  // --- EL CUADRADO REDONDEADO ESTILO GEMINI ---
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    background: #0f172a; // Color oscuro del sidebar de Nexus
+    color: #38bdf8; // Azul brillante de Nexus
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    border-radius: 10px; // Cuadrado con esquinas redondeadas
+    flex-shrink: 0; // Evita que el avatar se encoja
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-top: 24px; // Alineado con la burbuja de texto, no con la fecha
+  }
+}
+
+.fixed-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.75); // Transparencia clave
+  -webkit-backdrop-filter: blur(12px); 
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  padding: 1.5rem 0;
+  transition: all 0.3s ease;
+
+  .header-inner {
+    max-width: 950px; // Alineado con el .results-wrapper que hicimos antes
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .dossier-info {
+    .label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #94a3b8;
+      letter-spacing: 0.15em;
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem; 
+      font-weight: 800;
+      color: #0f172a;
+    }
+  }
+
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f1f5f9;
+    margin-left: 20px; 
+    padding: 8px 16px;
+    border-radius: 99px;
+    border: 1px solid #e2e8f0;
+
+    .status-text {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      
+    }
+
+    .pulse-indicator {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+      animation: pulse 2s infinite;
+    }
+  }
+}
+
+// Animación para que el encabezado parezca "vivo"
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+// --- SISTEMA DE COLORES DINÁMICOS POR AGENTE (Z-ESH) ---
+
+.card-analisis {
+  margin-bottom: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-left: 8px solid #cbd5e0; // Borde por defecto (Gris)
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateX(4px); // Efecto sutil al pasar el ratón
+  }
+
+  // Estilo base para el tag del nombre del agente
+  .decision-tag {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    color: rgb(255, 255, 255);
+    background: #556479; // Color base del tag
+    display: inline-block;
+  }
+
+  // --- VARIANTES POR AGENTE ---
+
+  // Market Intelligence)- VERDE
+  &.border-market_intelligence {
+    border-left-color: #22c55e !important;
+    .tag-market_intelligence {
+      background-color: rgba(6, 172, 67, 0.541) !important;
+      color: black !important;
+    }
+  }
+
+  // Solutions Architect - AZUL
+  &.border-solutions_architect {
+    border-left-color: #3b82f6 !important;
+    .tag-solutions_architect {
+      background-color: #6398ee !important;
+      color: rgb(255, 255, 255) !important;
+    }
+  }
+
+  // RISK OFFICER - NARANJA
+  &.border-risk_officer {
+    border-left-color: #f59e0b !important;
+    .tag-risk_officer {
+      background-color: #f59e0b !important;
+      color: black !important;
+    }
+  }
+
+  // Executive Reviewer / Informe Final - ROJO
+  &.border-executive_reviewer, &.border-final_report {
+    border-left-color: #ef4444 !important;
+    .tag-executive_reviewer, .tag-final_report {
+      background-color: #ef4444 !important;
+      color: rgb(255, 255, 255) !important;
+    }
+  }
+}
+
+// Estilos extra para que el contenido se vea limpio
+.header-analisis {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  .fecha {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+}
+
+.reasoning-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #475569;
+  
+  strong {
+    color: #000000;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+  }
+}
+
+.card-content {
+  padding: 1.5rem 2rem;
+  flex: 1;
+
+  .header-analisis {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+
+    .decision-tag {
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+  }
+
+  .reasoning-box {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #334155;
+    border-left: 3px solid #e2e8f0;
+  }
+
+  .ia-response {
+    line-height: 1.8;
+    color: #1e293b;
+  }
+}
+
+
+// --- SISTEMA DE MODAL CENTRAL ---
+.modal-overlay {
+  position: fixed;
+  inset: 0; // Ocupa toda la pantalla
+  background: rgba(15, 23, 42, 0.7); // Fondo oscuro traslúcido
+  -webkit-backdrop-filter: blur(8px); // AÑADIR ESTO
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; // Por encima de todo, incluso de la sidebar
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-window {
+  background: white;
+  width: 90%;
+  max-width: 440px;
+  border-radius: 20px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  position: relative;
+
+  // ANIMACIÓN DE ENTRADA (Crecimiento y subida)
+  animation: modalScaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  .close-x {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #f1f5f9;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #64748b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+  }
+
+  .modal-header {
+    padding: 2rem 2rem 1rem;
+    text-align: center;
+
+    .warning-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      margin: 0;
+      color: #0f172a;
+      font-size: 1.5rem;
+    }
+  }
+
+  .modal-body {
+    padding: 0 2rem 2rem;
+    text-align: center;
+    color: #475569;
+
+    .dossier-name-confirm {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 1rem 0;
+      font-weight: 700;
+      color: #0f172a;
+      border: 1px dashed #cbd5e0;
+    }
+
+    .warning-sub {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+  }
+
+  .modal-footer {
+    padding: 1.5rem 2rem;
+    background: #f8fafc;
+    display: flex;
+    gap: 12px;
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #475569;
+
+      &:hover {
+        background: #cbd5e0;
+      }
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+
+      &:hover {
+        background: #dc2626;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      }
+    }
+  }
+}
+
+// --- KEYFRAMES PARA LAS ANIMACIONES ---
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+
+@media print {
+  #content-to-export {
+    // Forzamos que los elementos no usen Flexbox complejo que rompe el PDF
+    .user-query-card, .agent-card-container {
+      display: block !important;
+      width: 100% !important;
+      page-break-inside: avoid !important;
+    }
+    
+    // Aseguramos que los bullets sean estándar
+    ul, li {
+      display: list-item !important;
+      list-style-type: disc !important;
+      margin-left: 20px !important;
+    }
+  }
+}
+// Clase de apoyo para el contenedor que exportamos
+#content-to-export {
+  width: 100%;
+  max-width: 800px; // Esto ayuda a que jsPDF calcule bien las proporciones
+  margin: 0 auto;
+}
+
+
+.dossier-actions {
+  display: flex;
+  gap: 5px;
+  opacity: 0; // Se ocultan por defecto
+  transition: opacity 0.3s ease;
+
+  .action-btn {
+    background: transparent !important; // Eliminamos el fondo blanco de las capturas
+    border: none !important;
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    
+    span {
+      font-size: 14px;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+
+    &.edit:hover span {
+      color: #38bdf8;
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+    }
+
+    &.delete:hover span {
+      color: #f43f5e;
+      text-shadow: 0 0 8px rgba(244, 63, 94, 0.6);
+    }
+  }
+}
+
+// Al pasar el ratón por el item, mostramos los botones
+.dossier-item:hover .dossier-actions {
+  opacity: 1;
+}

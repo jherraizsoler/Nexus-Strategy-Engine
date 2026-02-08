@@ -1,0 +1,14 @@
+<div class="card-analisis" [ngClass]="getAgentTheme()">
+  <div class="card-content">
+    <div class="header-analisis">
+      <span class="decision-tag" [ngClass]="'tag-' + agentName">
+        {{ role }}
+      </span>
+      <span class="fecha">Nodo Nexus Activo</span>
+    </div>
+
+    <div class="ia-response">
+      <markdown [data]="content"></markdown>
+    </div>
+  </div>
+</div>
