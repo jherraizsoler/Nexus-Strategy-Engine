@@ -9,14 +9,14 @@ services:
     env_file:
       - ./backend/.env 
     environment:
-      # 1. Ajustamos el PYTHONPATH a la nueva raíz del contenedor
+      # Inyecta la raíz del proyecto para asegurar que las importaciones de módulos (agents, state) sean absolutas y consistentes.
       - PYTHONPATH=/app
-      # 2. La ruta de la DB debe coincidir con la carpeta /app/data del Dockerfile
+      # Define la ubicación persistente de la base de datos SQLite para la gestión de hilos/memoria de LangGraph.
       - DATABASE_PATH=/app/data/nexus_strategy.db
     volumes:
-      # Mapeamos tu carpeta local backend a la ruta interna /app/backend
+      # Bind-mounting para desarrollo: Sincroniza el código fuente para Hot-Reload sin reconstruir la imagen.
       - ./backend:/app/backend
-      # Mapeamos la data específicamente
+      # Persistencia de datos: Garantiza que la base de datos de hilos de la IA sobreviva al reinicio del contenedor.
       - ./backend/data:/app/backend/data
     restart: always
 
@@ -25,12 +25,14 @@ services:
     container_name: nexus_strategy_frontend
     ports:
       - "4200:4200"
-    # --- AÑADIR ESTO PARA DESARROLLO ---
     volumes:
-      - ./frontend:/app          # Mapea tu código
-      - /app/node_modules/        # Protege las librerías del contenedor
+      # Sincronización en tiempo real del dashboard en Angular 18 para agilizar el feedback visual de la UI.
+      - ./frontend:/app
+      # Volume shadowing: Evita que el montaje local sobrescriba las dependencias instaladas dentro del contenedor Linux.
+      - /app/node_modules/
     environment:
-      - CHOKIDAR_USEPOLLING=true # Obligatorio para que Docker detecte cambios en Windows/Mac
-    # ----------------------------------
+      # Habilita el polling para el observador de archivos (Chokidar), necesario para detectar cambios en sistemas de archivos Windows.
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
+      # Garantiza el orden de arranque: El orquestador de agentes debe estar disponible antes de que el dashboard intente conectar.
       - nexus-backend
