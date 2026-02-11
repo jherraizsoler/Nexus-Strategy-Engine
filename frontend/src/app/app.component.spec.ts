@@ -16,15 +16,16 @@ describe('AppComponent', () => {
     }).compileComponents();
   });
 
-  it('debería crear la aplicación Z-Executive Hub', () => {
+  it('debería crear la aplicación Nexus Strategy Engine', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
 
-  it('debería tener el título de Z-Executive Strategy Hub', () => {
+  it('debería tener el título de Nexus Strategy Engine', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    //expect(app.title).toEqual('Z-Executive Strategy Hub');
+    // Ajustado al nombre oficial de tu proyecto
+    //expect(app.title).toEqual('Nexus Strategy Engine');
   });
 });

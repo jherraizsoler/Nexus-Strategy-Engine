@@ -224,7 +224,7 @@ export class AppComponent implements OnInit {
   }
 
   // --- UTILIDADES ---
-  hacerScrollArriba() {
+  private hacerScrollArriba() {
     setTimeout(() => {
       const container = document.querySelector('.scroll-container');
       if (container) container.scrollTo({ top: 0, behavior: 'smooth' });
@@ -350,7 +350,6 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // ASEGÚRATE DE QUE ESTA FUNCIÓN ESTÉ AQUÍ, DENTRO DE LA CLASE
   private addFooter(doc: any, margin: number, agente: string, color: number[]) {
     const pageCount = doc.internal.getNumberOfPages();
     const pageHeight = doc.internal.pageSize.getHeight();
